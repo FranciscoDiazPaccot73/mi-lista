@@ -10,6 +10,13 @@
     font-size: 30px;
     line-height: 1.15;
     margin: 0 0 32px 0;
+    position: relative;
+
+    span {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
   }
 
   .footer {

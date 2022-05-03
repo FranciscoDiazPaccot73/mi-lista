@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head'
 import Image from 'next/image'
 
-import { Button } from '@chakra-ui/react'
-import { AddIcon } from '@chakra-ui/icons'
+import { Button, useColorMode, IconButton } from '@chakra-ui/react'
+import { AddIcon, MoonIcon, SunIcon } from '@chakra-ui/icons'
 import Card from '../components/Card';
 
 import styles from '../styles/Home.module.scss'
@@ -13,6 +13,7 @@ const Home: NextPage = () => {
   const [minHeight, setHeight] = useState('100vh');
   const [sections, setSections] = useState<any>([]);
   const [addingSections, setAdding] = useState(false);
+  const { colorMode, toggleColorMode } = useColorMode()
   
   useEffect(() => {
     setHeight(`${window.innerHeight}px`)
@@ -42,6 +43,16 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <div className={styles.title}>
           Mi Lista
+          <span>
+            <IconButton
+              colorScheme='linkedin'
+              aria-label='Borrar'
+              variant="outline"
+              size='xs'
+              icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
+              onClick={toggleColorMode}
+            />
+          </span>
         </div>
         {sections && sections.map((section: string) => (
           <Card
