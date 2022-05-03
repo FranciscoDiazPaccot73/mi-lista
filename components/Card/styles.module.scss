@@ -1,0 +1,53 @@
+.card {
+  border: 1px solid #000;
+  border-radius: 8px;
+  margin: 24px 0;
+  padding: 16px 0;
+
+  &__header {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 0 16px 12px;
+  }
+
+  &__content {
+    padding: 0 24px;
+
+    &_cart {
+      background-color: #a9e1a9;
+    }
+  }
+
+  &__item {
+    align-items: center;
+    display: flex;
+    padding: 8px 0;
+    position: relative;
+
+    &_actions {
+      position: absolute;
+      right: 0;
+
+      button {
+        &:first-child {
+          margin-right: 6px;
+        }
+
+        &:last-child {
+          margin-left: 6px;
+        }
+      }
+    }
+
+    &::before {
+      content: "- ";
+      margin-right: 6px;
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin: 6px 20px 0 0;
+  }
+}
