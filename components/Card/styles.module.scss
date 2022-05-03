@@ -1,8 +1,12 @@
 .card {
-  border: 1px solid #000;
+  border: 1px solid #90cdf4;
   border-radius: 8px;
   margin: 24px 0;
   padding: 16px 0;
+
+  &_light {
+    border-color: #000;
+  }
 
   &__header {
     font-size: 18px;
@@ -14,7 +18,11 @@
     padding: 0 24px;
 
     &_cart {
-      background-color: #a9e1a9;
+      background-color: #aee2ae3b;
+
+      &_light {
+        background-color: #aee2aee3;
+      }
     }
   }
 

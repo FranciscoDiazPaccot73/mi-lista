@@ -8,6 +8,7 @@ import {
   Editable,
   EditableInput,
   EditablePreview,
+  useColorMode,
 } from '@chakra-ui/react'
 import { CheckIcon, DeleteIcon, AddIcon } from '@chakra-ui/icons'
 
@@ -24,6 +25,9 @@ const Card = ({ id, onSectionAdded, removeSection }: Props) => {
   const [items, setItems] = useState<any>([]);
   const [addingItems, setAdding] = useState(false);
   const [buyedItems, setBuyed] = useState<any>([]);
+  const { colorMode } = useColorMode()
+
+  const cardClasses = classNames(styles.card, colorMode === 'light' && styles.card_light)
 
   useEffect(() => {
     if (!header) document.getElementById(`card-${id}`)?.focus();
@@ -69,7 +73,7 @@ const Card = ({ id, onSectionAdded, removeSection }: Props) => {
   }
 
   return (
-  <div className={styles.card}>
+  <div className={cardClasses}>
     <div className={styles.card__header}>
       {header ? (
         <div style={{ position: "relative" }}>
@@ -104,7 +108,11 @@ const Card = ({ id, onSectionAdded, removeSection }: Props) => {
     <div>
       {items && items.map((item: string, index: any) => {
         const itemOnCart = buyedItems.some((cartItem: string) => cartItem === item);
-        const itemClasses = classNames(styles.card__content, itemOnCart && styles.card__content_cart)
+        const itemClasses = classNames(
+          styles.card__content,
+          itemOnCart && styles.card__content_cart,
+          colorMode === "light" && styles.card__content_cart_light
+        )
 
         return (
           <div key={`item-${item}-${index}`} className={itemClasses}>
