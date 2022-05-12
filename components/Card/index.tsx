@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useContext } from 'react';
 import classNames from 'classnames';
 
 import {
@@ -12,20 +12,26 @@ import {
 } from '@chakra-ui/react'
 import { CheckIcon, DeleteIcon, AddIcon } from '@chakra-ui/icons'
 
+import { PageContext } from '../../context';
+import { setHeaderAction, setItemsAction } from '../../context/actions';
+
 import styles from './styles.module.scss';
 
 interface Props {
   id: string,
   onSectionAdded: Function,
   removeSection: Function,
+  items: Array<string>,
+  head: string,
 }
 
-const Card = ({ id, onSectionAdded, removeSection }: Props) => {
+const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
   const [header, setHeader] = useState<any>(null);
   const [items, setItems] = useState<any>([]);
   const [addingItems, setAdding] = useState(false);
   const [buyedItems, setBuyed] = useState<any>([]);
   const { colorMode } = useColorMode()
+  const { dispatch, state: { contextHeaders, contextItems = {} } } = useContext(PageContext);
 
   const cardClasses = classNames(styles.card, colorMode === 'light' && styles.card_light)
 
@@ -35,17 +41,26 @@ const Card = ({ id, onSectionAdded, removeSection }: Props) => {
 
   const handleSectionChange = (value: string) => {
     setHeader(value);
+    const newValues = contextHeaders ? [...contextHeaders, value] : [value];
+    setHeaderAction(dispatch, newValues);
     onSectionAdded();
   }
 
   const handleAddItems = (item: string) => {
-    setItems([...items, item]);
+    const newItems = [...items, item];
+    const newContextItems = contextItems;
+    newContextItems[header] = newItems;
+    setItems(newItems);
+    setItemsAction(dispatch, newContextItems);
     setAdding(false)
   }
 
   const removeItem = (item: string) => {
     const newItems = items.filter((currentItem: string) => currentItem !== item);
+    const newContextItems = contextItems;
+    newContextItems[header] = newItems;
     setItems(newItems);
+    setItemsAction(dispatch, newContextItems);
   }
 
   const handleOnCart = (item: string) => {
@@ -75,22 +90,19 @@ const Card = ({ id, onSectionAdded, removeSection }: Props) => {
   return (
   <div className={cardClasses}>
     <div className={styles.card__header}>
-      {header ? (
+      {head ? (
         <div style={{ position: "relative" }}>
-          <span>{header}</span>
+          <span>{head}</span>
           <div style={{ position: "absolute", right: 0, top: 0 }}>
-            {items.length ? (
-              <Button onClick={sortItems} size="xs" variant="outline">Ordenar</Button>
-            ) : (
-              <IconButton
-                colorScheme='red'
-                aria-label='Borrar'
-                variant="outline"
-                size='xs'
-                icon={<DeleteIcon />}
-                onClick={() => removeSection(id)}
-              />
-            )}
+            <IconButton
+              colorScheme='red'
+              aria-label='Borrar'
+              variant="outline"
+              size='xs'
+              icon={<DeleteIcon />}
+              onClick={() => removeSection(id)}
+            />
+            {items.length ? <span style={{ marginLeft: "32px" }}><Button onClick={sortItems} size="xs" variant="outline">Ordenar</Button></span> : null}
           </div>
         </div>
       ) : (
@@ -106,12 +118,12 @@ const Card = ({ id, onSectionAdded, removeSection }: Props) => {
       )}
     </div>
     <div>
-      {items && items.map((item: string, index: any) => {
+      {i && i.map((item: string, index: any) => {
         const itemOnCart = buyedItems.some((cartItem: string) => cartItem === item);
         const itemClasses = classNames(
           styles.card__content,
           itemOnCart && styles.card__content_cart,
-          colorMode === "light" && styles.card__content_cart_light
+          itemOnCart && colorMode === "light" && styles.card__content_cart_light
         )
 
         return (

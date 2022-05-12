@@ -1,11 +1,14 @@
 import type { NextPage } from 'next'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Head from 'next/head'
 import Image from 'next/image'
 
 import { Button, useColorMode, IconButton } from '@chakra-ui/react'
-import { AddIcon, MoonIcon, SunIcon } from '@chakra-ui/icons'
+import { AddIcon, MoonIcon, SunIcon, DeleteIcon, ExternalLinkIcon, StarIcon } from '@chakra-ui/icons'
 import Card from '../components/Card';
+
+import { PageContext } from '../context';
+import { setHeaderAction, setItemsAction } from '../context/actions';
 
 import styles from '../styles/Home.module.scss'
 
@@ -13,10 +16,21 @@ const Home: NextPage = () => {
   const [minHeight, setHeight] = useState('100vh');
   const [sections, setSections] = useState<any>([]);
   const [addingSections, setAdding] = useState(false);
+  const [itemsInStorage, setStorageStatus] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode()
+  const { dispatch, state: { contextItems = {}, contextHeaders }}  = useContext(PageContext);
   
   useEffect(() => {
     setHeight(`${window.innerHeight}px`)
+    const sections = window.localStorage.getItem('sections');
+    const items = window.localStorage.getItem('items');
+    const headers = window.localStorage.getItem('headers');
+
+    if (sections && items && headers) {
+      setStorageStatus(true);
+      setItemsAction(dispatch, JSON.parse(items || 'null'));
+      setHeaderAction(dispatch, JSON.parse(headers || 'null'))
+    }
   }, []);
 
   const handleAddSection = () => {
@@ -29,7 +43,24 @@ const Home: NextPage = () => {
 
   const handleRemoveSection = (id: string) => {
     const newSections = sections.filter((section: string) => section !== id);
+    setHeaderAction(dispatch, newSections);
     setSections(newSections);
+  }
+
+  const handleSaveInStorage = () => {
+    window.localStorage.setItem('sections', sections.length);
+    const itemsString = JSON.stringify(contextItems)
+    const headersString = JSON.stringify(contextHeaders)
+    window.localStorage.setItem('items', itemsString)
+    window.localStorage.setItem('headers', headersString)
+    setStorageStatus(true)
+  }
+  
+  const handleClearStorage = () => {
+    window.localStorage.removeItem('sections');
+    window.localStorage.removeItem('items');
+    window.localStorage.removeItem('headers');
+    setStorageStatus(false)
   }
 
   return (
@@ -54,12 +85,14 @@ const Home: NextPage = () => {
             />
           </span>
         </div>
-        {sections && sections.map((section: string) => (
+        {contextHeaders && contextHeaders.map((section: string) => (
           <Card
             key={`section-${section}`}
             id={section}
             onSectionAdded={() => setAdding(false)}
             removeSection={handleRemoveSection}
+            head={section}
+            items={contextItems[section]}
           />
         ))}
         <Button
@@ -73,6 +106,31 @@ const Home: NextPage = () => {
         >
           Agregar Seccion
         </Button>
+        <div className={styles.actions}>
+          <IconButton
+            colorScheme='red'
+            aria-label='Eliminar Listas'
+            size='lg'
+            icon={<DeleteIcon />}
+            onClick={handleClearStorage}
+            disabled={!itemsInStorage}
+            />
+          <IconButton
+            colorScheme='teal'
+            aria-label='Guardar Listas'
+            size='lg'
+            icon={<StarIcon />}
+            onClick={handleSaveInStorage}
+            disabled={itemsInStorage}
+          />
+          <IconButton
+            colorScheme='yellow'
+            aria-label='Compartir'
+            size='lg'
+            icon={<ExternalLinkIcon />}
+            onClick={toggleColorMode}
+          />
+        </div>
       </main>
 
       <footer className={styles.footer}>
