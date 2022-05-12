@@ -3,12 +3,12 @@ import { useEffect, useState, useContext } from 'react';
 import Head from 'next/head'
 import Image from 'next/image'
 
-import { Button, useColorMode, IconButton } from '@chakra-ui/react'
+import { Button, useColorMode, IconButton, useToast } from '@chakra-ui/react'
 import { AddIcon, MoonIcon, SunIcon, DeleteIcon, ExternalLinkIcon, StarIcon } from '@chakra-ui/icons'
 import Card from '../components/Card';
 
 import { PageContext } from '../context';
-import { setHeaderAction, setItemsAction } from '../context/actions';
+import { setHeaderAction, setItemsAction, shouldCleanList } from '../context/actions';
 
 import styles from '../styles/Home.module.scss'
 
@@ -18,6 +18,7 @@ const Home: NextPage = () => {
   const [addingSections, setAdding] = useState(false);
   const [itemsInStorage, setStorageStatus] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode()
+  const toast = useToast()
   const { dispatch, state: { contextItems = {}, contextHeaders }}  = useContext(PageContext);
   
   useEffect(() => {
@@ -28,8 +29,12 @@ const Home: NextPage = () => {
 
     if (sections && items && headers) {
       setStorageStatus(true);
+      const headerParsed = JSON.parse(headers || 'null');
       setItemsAction(dispatch, JSON.parse(items || 'null'));
-      setHeaderAction(dispatch, JSON.parse(headers || 'null'))
+      setHeaderAction(dispatch, headerParsed)
+      const newSections = headerParsed || [];
+      const arraySections = Array.from({length: newSections.length}, (_, i) => i + 1)
+      setSections(arraySections);
     }
   }, []);
 
@@ -54,6 +59,13 @@ const Home: NextPage = () => {
     window.localStorage.setItem('items', itemsString)
     window.localStorage.setItem('headers', headersString)
     setStorageStatus(true)
+    toast({
+      title: `OK!`,
+      status: 'success',
+      description: "Se guardo tu lista correctamente",
+      isClosable: true,
+      duration: 4000,
+    })
   }
   
   const handleClearStorage = () => {
@@ -61,6 +73,16 @@ const Home: NextPage = () => {
     window.localStorage.removeItem('items');
     window.localStorage.removeItem('headers');
     setStorageStatus(false)
+    setItemsAction(dispatch, [])
+    setHeaderAction(dispatch, [])
+    shouldCleanList(dispatch, true);
+    toast({
+      title: `Listo!`,
+      status: 'info',
+      description: "Se elimino tu lista correctamente",
+      isClosable: true,
+      duration: 4000,
+    })
   }
 
   return (
@@ -85,16 +107,20 @@ const Home: NextPage = () => {
             />
           </span>
         </div>
-        {contextHeaders && contextHeaders.map((section: string) => (
-          <Card
-            key={`section-${section}`}
-            id={section}
-            onSectionAdded={() => setAdding(false)}
-            removeSection={handleRemoveSection}
-            head={section}
-            items={contextItems[section]}
-          />
-        ))}
+        {sections && sections.map((section: string) => {
+          const headKey = contextHeaders ? contextHeaders[parseInt(section)-1] : '';
+
+          return (
+            <Card
+              key={`section-${section}`}
+              id={section}
+              onSectionAdded={() => setAdding(false)}
+              removeSection={handleRemoveSection}
+              head={headKey}
+              items={contextItems[headKey]}
+            />
+          )
+        })}
         <Button
           onClick={handleAddSection}
           leftIcon={<AddIcon />}
