@@ -1,6 +1,7 @@
 export const types = {
   SET_ITEMS: "SET_ITEMS",
   SET_HEADER: "SET_HEADER",
+  CLEAN_LIST: "CLEAN_LIST",
 };
 
 export const init = (config: any) => {
@@ -16,6 +17,9 @@ export const reducer = (state: any, action: any) => {
     }
     case types.SET_HEADER: {
       return {...state, contextHeaders: action.header}
+    }
+    case types.CLEAN_LIST: {
+      return {...state, shouldClean: action.value}
     }
     default:
       return null;

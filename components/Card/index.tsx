@@ -13,7 +13,7 @@ import {
 import { CheckIcon, DeleteIcon, AddIcon } from '@chakra-ui/icons'
 
 import { PageContext } from '../../context';
-import { setHeaderAction, setItemsAction } from '../../context/actions';
+import { setHeaderAction, setItemsAction, shouldCleanList } from '../../context/actions';
 
 import styles from './styles.module.scss';
 
@@ -31,13 +31,24 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
   const [addingItems, setAdding] = useState(false);
   const [buyedItems, setBuyed] = useState<any>([]);
   const { colorMode } = useColorMode()
-  const { dispatch, state: { contextHeaders, contextItems = {} } } = useContext(PageContext);
+  const { dispatch, state: { contextHeaders, contextItems = {}, shouldClean } } = useContext(PageContext);
 
   const cardClasses = classNames(styles.card, colorMode === 'light' && styles.card_light)
 
   useEffect(() => {
     if (!header) document.getElementById(`card-${id}`)?.focus();
-  }, []);
+
+    if (i) setItems(i);
+    if (head) setHeader(head);
+  }, [i, head]);
+
+  useEffect(() => {
+    if (shouldClean) {
+      setItems([])
+      setHeader([])
+      shouldCleanList(dispatch, false)
+    }
+  }, [shouldClean])
 
   const handleSectionChange = (value: string) => {
     setHeader(value);
@@ -102,7 +113,7 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
               icon={<DeleteIcon />}
               onClick={() => removeSection(id)}
             />
-            {items.length ? <span style={{ marginLeft: "32px" }}><Button onClick={sortItems} size="xs" variant="outline">Ordenar</Button></span> : null}
+            {items && items.length ? <span style={{ marginLeft: "32px" }}><Button onClick={sortItems} size="xs" variant="outline">Ordenar</Button></span> : null}
           </div>
         </div>
       ) : (
@@ -117,62 +128,64 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
         </Editable>
       )}
     </div>
-    <div>
-      {i && i.map((item: string, index: any) => {
-        const itemOnCart = buyedItems.some((cartItem: string) => cartItem === item);
-        const itemClasses = classNames(
-          styles.card__content,
-          itemOnCart && styles.card__content_cart,
-          itemOnCart && colorMode === "light" && styles.card__content_cart_light
-        )
+    { items && (
+      <div>
+        {items && items.map((item: string, index: any) => {
+          const itemOnCart = buyedItems.some((cartItem: string) => cartItem === item);
+          const itemClasses = classNames(
+            styles.card__content,
+            itemOnCart && styles.card__content_cart,
+            itemOnCart && colorMode === "light" && styles.card__content_cart_light
+          )
 
-        return (
-          <div key={`item-${item}-${index}`} className={itemClasses}>
-            <div className={styles.card__item}>
-              <span>{item}</span>
-              <div className={styles.card__item_actions}>
-                {itemOnCart ? (
-                  <Button onClick={() => removeFromCart(item)} variant="ghost" size="xs" colorScheme="linkedin">Quitar</Button>
-                ) : (
-                  <Fragment>
-                    <IconButton
-                      colorScheme='red'
-                      aria-label='Borrar'
-                      variant="ghost"
-                      size='xs'
-                      icon={<DeleteIcon />}
-                      onClick={() => removeItem(item)}
-                    />
-                    <IconButton
-                      colorScheme='teal'
-                      aria-label='Confirmar'
-                      size='xs'
-                      variant="ghost"
-                      icon={<CheckIcon />}
-                      onClick={() => handleOnCart(item)}
-                    />
-                  </Fragment>
-                )}
+          return (
+            <div key={`item-${item}-${index}`} className={itemClasses}>
+              <div className={styles.card__item}>
+                <span>{item}</span>
+                <div className={styles.card__item_actions}>
+                  {itemOnCart ? (
+                    <Button onClick={() => removeFromCart(item)} variant="ghost" size="xs" colorScheme="linkedin">Quitar</Button>
+                  ) : (
+                    <Fragment>
+                      <IconButton
+                        colorScheme='red'
+                        aria-label='Borrar'
+                        variant="ghost"
+                        size='xs'
+                        icon={<DeleteIcon />}
+                        onClick={() => removeItem(item)}
+                      />
+                      <IconButton
+                        colorScheme='teal'
+                        aria-label='Confirmar'
+                        size='xs'
+                        variant="ghost"
+                        icon={<CheckIcon />}
+                        onClick={() => handleOnCart(item)}
+                      />
+                    </Fragment>
+                  )}
+                </div>
               </div>
+              <Divider />
             </div>
-            <Divider />
+          )
+        })}
+        {addingItems && (
+          <div className={styles.card__content}>
+            <Editable
+              onSubmit={handleAddItems}
+              submitOnBlur
+              startWithEditView
+              defaultValue='Producto'
+            >
+              <EditablePreview />
+              <EditableInput id={`item-${id}`} />
+            </Editable>
           </div>
-        )
-      })}
-      {addingItems && (
-        <div className={styles.card__content}>
-          <Editable
-            onSubmit={handleAddItems}
-            submitOnBlur
-            startWithEditView
-            defaultValue='Producto'
-          >
-            <EditablePreview />
-            <EditableInput id={`item-${id}`} />
-          </Editable>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    )}
     <div className={styles.actions}>
       <Button
         colorScheme="blue"
