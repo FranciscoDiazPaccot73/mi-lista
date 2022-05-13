@@ -1,5 +1,5 @@
 .container {
-  padding: 0 32px;
+  padding: 0 32px 40px;
 
   .main {
     height: 100%;
@@ -34,5 +34,26 @@
     left: 0;
     padding: 24px 32px;
     position: absolute;
+    width: 100%;
+
+    &_light {
+      color: '#000';
+
+      .dev {
+        color: '#000';
+      }
+    }
+    
+    .dev {
+      bottom: 10px;
+      font-size: 8px;
+      position: absolute;
+      right: 16px;
+    }
+    
+    .dev a {
+      color: '#fff';
+      font-weight: 600;
+    }
   }
 }
