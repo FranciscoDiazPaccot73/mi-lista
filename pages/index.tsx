@@ -131,7 +131,7 @@ const Home: NextPage = () => {
       </main>
       <footer className={footerClasses}>
         <div className={styles.dev}>
-          Powered by <a href='https://franciscodiazpaccot.com' target="_blank">
+          Powered by <a href='https://franciscodiazpaccot.com' target="_blank" rel="noreferrer noopener">
           Francisco Diaz Paccot</a>
         </div>
       </footer>
