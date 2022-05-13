@@ -11,3 +11,8 @@ export const setItemsAction = (dispatch: any, items: any) => {
 export const shouldCleanList = (dispatch: any, value: boolean) => {
   dispatch({ type: types.CLEAN_LIST, value });
 };
+
+export const setStorageStatus = (dispatch: any, value: boolean, optional?: boolean) => {
+  dispatch({ type: types.STORAGE_STATUS, value });
+  dispatch({ type: types.ENABLE_BOTH_ACTIONS, value: !!optional });
+};
