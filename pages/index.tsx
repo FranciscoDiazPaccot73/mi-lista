@@ -8,7 +8,7 @@ import { AddIcon, MoonIcon, SunIcon, DeleteIcon, ExternalLinkIcon, StarIcon } fr
 import Card from '../components/Card';
 
 import { PageContext } from '../context';
-import { setHeaderAction, setItemsAction, shouldCleanList } from '../context/actions';
+import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus } from '../context/actions';
 
 import styles from '../styles/Home.module.scss'
 
@@ -16,10 +16,9 @@ const Home: NextPage = () => {
   const [minHeight, setHeight] = useState('100vh');
   const [sections, setSections] = useState<any>([]);
   const [addingSections, setAdding] = useState(false);
-  const [itemsInStorage, setStorageStatus] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode()
   const toast = useToast()
-  const { dispatch, state: { contextItems = {}, contextHeaders }}  = useContext(PageContext);
+  const { dispatch, state: { shouldEnableBoth, itemsInStorage, contextItems = {}, contextHeaders }}  = useContext(PageContext);
   
   useEffect(() => {
     setHeight(`${window.innerHeight}px`)
@@ -28,7 +27,7 @@ const Home: NextPage = () => {
     const headers = window.localStorage.getItem('headers');
 
     if (sections && items && headers) {
-      setStorageStatus(true);
+      setStorageStatus(dispatch, true);
       const headerParsed = JSON.parse(headers || 'null');
       setItemsAction(dispatch, JSON.parse(items || 'null'));
       setHeaderAction(dispatch, headerParsed)
@@ -37,6 +36,18 @@ const Home: NextPage = () => {
       setSections(arraySections);
     }
   }, []);
+
+  useEffect(() => {
+    if (shouldEnableBoth) {
+      toast({
+        title: `Cuidado!`,
+        status: 'warning',
+        description: "La lista que tenes guardada no esta actualizada",
+        isClosable: true,
+        duration: 4000,
+      })
+    }
+  }, [shouldEnableBoth])
 
   const handleAddSection = () => {
     const newSections = sections;
@@ -58,7 +69,7 @@ const Home: NextPage = () => {
     const headersString = JSON.stringify(contextHeaders)
     window.localStorage.setItem('items', itemsString)
     window.localStorage.setItem('headers', headersString)
-    setStorageStatus(true)
+    setStorageStatus(dispatch, true)
     toast({
       title: `OK!`,
       status: 'success',
@@ -72,7 +83,7 @@ const Home: NextPage = () => {
     window.localStorage.removeItem('sections');
     window.localStorage.removeItem('items');
     window.localStorage.removeItem('headers');
-    setStorageStatus(false)
+    setStorageStatus(dispatch, false)
     setItemsAction(dispatch, [])
     setHeaderAction(dispatch, [])
     shouldCleanList(dispatch, true);
@@ -139,7 +150,7 @@ const Home: NextPage = () => {
             size='lg'
             icon={<DeleteIcon />}
             onClick={handleClearStorage}
-            disabled={!itemsInStorage}
+            disabled={!itemsInStorage && !shouldEnableBoth}
             />
           <IconButton
             colorScheme='teal'
@@ -147,7 +158,7 @@ const Home: NextPage = () => {
             size='lg'
             icon={<StarIcon />}
             onClick={handleSaveInStorage}
-            disabled={itemsInStorage}
+            disabled={itemsInStorage && !shouldEnableBoth}
           />
           <IconButton
             colorScheme='yellow'

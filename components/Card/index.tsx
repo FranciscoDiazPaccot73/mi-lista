@@ -10,10 +10,10 @@ import {
   EditablePreview,
   useColorMode,
 } from '@chakra-ui/react'
-import { CheckIcon, DeleteIcon, AddIcon } from '@chakra-ui/icons'
+import { CheckIcon, DeleteIcon, AddIcon, WarningTwoIcon, StarIcon } from '@chakra-ui/icons'
 
 import { PageContext } from '../../context';
-import { setHeaderAction, setItemsAction, shouldCleanList } from '../../context/actions';
+import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus } from '../../context/actions';
 
 import styles from './styles.module.scss';
 
@@ -31,7 +31,7 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
   const [addingItems, setAdding] = useState(false);
   const [buyedItems, setBuyed] = useState<any>([]);
   const { colorMode } = useColorMode()
-  const { dispatch, state: { contextHeaders, contextItems = {}, shouldClean } } = useContext(PageContext);
+  const { dispatch, state: { shouldEnableBoth, itemsInStorage, contextHeaders, contextItems = {}, shouldClean } } = useContext(PageContext);
 
   const cardClasses = classNames(styles.card, colorMode === 'light' && styles.card_light)
 
@@ -64,6 +64,7 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
     setItems(newItems);
     setItemsAction(dispatch, newContextItems);
     setAdding(false)
+    if (itemsInStorage) setStorageStatus(dispatch, false, true);
   }
 
   const removeItem = (item: string) => {
@@ -98,12 +99,20 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
     setItems(newItems);
   }
 
+  const HeaderIcon = () => {
+    if (shouldEnableBoth) return <WarningTwoIcon color="orange" />;
+    if (itemsInStorage) return <StarIcon color="orange" />;
+
+    return null;
+  }
+
   return (
   <div className={cardClasses}>
     <div className={styles.card__header}>
       {head ? (
         <div style={{ position: "relative" }}>
-          <span>{head}</span>
+          <span style={{ marginRight: "12px" }}>{head}</span>
+          <HeaderIcon />
           <div style={{ position: "absolute", right: 0, top: 0 }}>
             <IconButton
               colorScheme='red'
