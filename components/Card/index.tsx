@@ -76,21 +76,12 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
   }
 
   const handleOnCart = (item: string) => {
-    const obj = {
-      section: header,
-      item
-    }
     if (buyedItems.some((cartItem: string) => cartItem === item)) return;
 
     setBuyed([...buyedItems, item]);
   }
 
   const removeFromCart = (item: string) => {
-    const obj = {
-      section: header,
-      item
-    }
-
     setBuyed(buyedItems.filter((cart: string) => cart !== item));
   }
 

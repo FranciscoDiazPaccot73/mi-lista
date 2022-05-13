@@ -1,11 +1,12 @@
 import type { NextPage } from 'next'
 import { useEffect, useState, useContext } from 'react';
 import Head from 'next/head'
-import Image from 'next/image'
+import classNames from 'classnames';
 
-import { Button, useColorMode, IconButton, useToast } from '@chakra-ui/react'
-import { AddIcon, MoonIcon, SunIcon, DeleteIcon, ExternalLinkIcon, StarIcon } from '@chakra-ui/icons'
-import Card from '../components/Card';
+import { useColorMode, IconButton, useToast } from '@chakra-ui/react'
+import { MoonIcon, SunIcon } from '@chakra-ui/icons'
+import Actions from '../components/Actions';
+import Sections from '../components/Sections';
 
 import { PageContext } from '../context';
 import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus } from '../context/actions';
@@ -18,7 +19,8 @@ const Home: NextPage = () => {
   const [addingSections, setAdding] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode()
   const toast = useToast()
-  const { dispatch, state: { shouldEnableBoth, itemsInStorage, contextItems = {}, contextHeaders }}  = useContext(PageContext);
+  const { dispatch, state: { shouldEnableBoth, contextItems = {}, contextHeaders }}  = useContext(PageContext);
+  const footerClasses = classNames(styles.footer, colorMode === 'dark' && styles.footer_light)
   
   useEffect(() => {
     setHeight(`${window.innerHeight}px`)
@@ -103,7 +105,6 @@ const Home: NextPage = () => {
         <meta name="description" content="Lista de compras" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main className={styles.main}>
         <div className={styles.title}>
           Mi Lista
@@ -118,69 +119,21 @@ const Home: NextPage = () => {
             />
           </span>
         </div>
-        {sections && sections.map((section: string) => {
-          const headKey = contextHeaders ? contextHeaders[parseInt(section)-1] : '';
-
-          return (
-            <Card
-              key={`section-${section}`}
-              id={section}
-              onSectionAdded={() => setAdding(false)}
-              removeSection={handleRemoveSection}
-              head={headKey}
-              items={contextItems[headKey]}
-            />
-          )
-        })}
-        <Button
-          onClick={handleAddSection}
-          leftIcon={<AddIcon />}
-          isFullWidth
-          variant="outline"
-          colorScheme="grayAlpha"
-          disabled={addingSections}
-          size="xs"
-        >
-          Agregar Seccion
-        </Button>
-        <div className={styles.actions}>
-          <IconButton
-            colorScheme='red'
-            aria-label='Eliminar Listas'
-            size='lg'
-            icon={<DeleteIcon />}
-            onClick={handleClearStorage}
-            disabled={!itemsInStorage && !shouldEnableBoth}
-            />
-          <IconButton
-            colorScheme='teal'
-            aria-label='Guardar Listas'
-            size='lg'
-            icon={<StarIcon />}
-            onClick={handleSaveInStorage}
-            disabled={itemsInStorage && !shouldEnableBoth}
-          />
-          <IconButton
-            colorScheme='yellow'
-            aria-label='Compartir'
-            size='lg'
-            icon={<ExternalLinkIcon />}
-            onClick={toggleColorMode}
-          />
-        </div>
+        {sections ?
+          <Sections sections={sections} handleRemoveSection={handleRemoveSection} setAdding={setAdding} /> : null
+        }
+        <Actions
+          handleAddSection={handleAddSection}
+          addingSections={addingSections}
+          handleClearStorage={handleClearStorage}
+          handleSaveInStorage={handleSaveInStorage}
+        />
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
+      <footer className={footerClasses}>
+        <div className={styles.dev}>
+          Powered by <a href='https://franciscodiazpaccot.com' target="_blank" rel="noreferrer noopener">
+          Francisco Diaz Paccot</a>
+        </div>
       </footer>
     </div>
   )
