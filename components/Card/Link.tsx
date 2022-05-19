@@ -29,7 +29,7 @@ const LinkCard = ({ link, onRemove, onEdit, isOnStorage }: LinkCardInterface) =>
         <StarIcon color="orange" />
       </div>
     )}
-    <a href={link?.url} target="_blank">{link?.text}</a>
+    <a href={link?.url} target="_blank" rel="noreferrer noopener">{link?.text}</a>
     <span className={styles.card_links__actions}>
       <IconButton
         colorScheme='yellow'
