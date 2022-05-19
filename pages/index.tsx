@@ -9,7 +9,8 @@ import Actions from '../components/Actions';
 import Sections from '../components/Sections';
 
 import { PageContext } from '../context';
-import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus } from '../context/actions';
+import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus, disableBoth } from '../context/actions';
+import { emitToast } from '../utils';
 
 import styles from '../styles/Home.module.scss'
 
@@ -19,11 +20,11 @@ const Home: NextPage = () => {
   const [addingSections, setAdding] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode()
   const toast = useToast()
-  const { dispatch, state: { shouldEnableBoth, contextItems = {}, contextHeaders }}  = useContext(PageContext);
+  const { dispatch, state: { shouldEnableBoth, contextItems = {}, contextHeaders, shouldDisableBoth, itemsInStorage }}  = useContext(PageContext);
   const footerClasses = classNames(styles.footer, colorMode === 'dark' && styles.footer_light)
   
   useEffect(() => {
-    setHeight(`${window.innerHeight}px`)
+    setHeight(`${window.innerHeight - 53}px`)
     const sections = window.localStorage.getItem('sections');
     const items = window.localStorage.getItem('items');
     const headers = window.localStorage.getItem('headers');
@@ -36,18 +37,14 @@ const Home: NextPage = () => {
       const newSections = headerParsed || [];
       const arraySections = Array.from({length: newSections.length}, (_, i) => i + 1)
       setSections(arraySections);
+    } else {
+      disableBoth(dispatch, true);
     }
   }, []);
 
   useEffect(() => {
     if (shouldEnableBoth) {
-      toast({
-        title: `Cuidado!`,
-        status: 'warning',
-        description: "La lista que tenes guardada no esta actualizada",
-        isClosable: true,
-        duration: 4000,
-      })
+      emitToast({ toast, type: 'warning' })
     }
   }, [shouldEnableBoth])
 
@@ -61,8 +58,15 @@ const Home: NextPage = () => {
 
   const handleRemoveSection = (id: string) => {
     const newSections = sections.filter((section: string) => section !== id);
+    const removedHeader = contextHeaders[parseInt(id, 10) -1] ?? '';
+    const newHeaders = contextHeaders.filter((header: string) => header !== removedHeader)
+    const newItems = contextItems;
+    delete newItems[removedHeader];
     setHeaderAction(dispatch, newSections);
     setSections(newSections);
+    setHeaderAction(dispatch, newHeaders);
+    setItemsAction(dispatch, newItems);
+    if (!Object.keys(newItems).length) disableBoth(dispatch, true);
   }
 
   const handleSaveInStorage = () => {
@@ -72,13 +76,7 @@ const Home: NextPage = () => {
     window.localStorage.setItem('items', itemsString)
     window.localStorage.setItem('headers', headersString)
     setStorageStatus(dispatch, true)
-    toast({
-      title: `OK!`,
-      status: 'success',
-      description: "Se guardo tu lista correctamente",
-      isClosable: true,
-      duration: 4000,
-    })
+    emitToast({ toast });
   }
   
   const handleClearStorage = () => {
@@ -89,13 +87,8 @@ const Home: NextPage = () => {
     setItemsAction(dispatch, [])
     setHeaderAction(dispatch, [])
     shouldCleanList(dispatch, true);
-    toast({
-      title: `Listo!`,
-      status: 'info',
-      description: "Se elimino tu lista correctamente",
-      isClosable: true,
-      duration: 4000,
-    })
+    emitToast({ toast, type: 'info' })
+    disableBoth(dispatch, true);
   }
 
   return (
@@ -123,15 +116,19 @@ const Home: NextPage = () => {
           <Sections sections={sections} handleRemoveSection={handleRemoveSection} setAdding={setAdding} /> : null
         }
         <Actions
+          label="Agregar seccion"
           handleAddSection={handleAddSection}
           addingSections={addingSections}
           handleClearStorage={handleClearStorage}
           handleSaveInStorage={handleSaveInStorage}
+          shouldEnableBoth={shouldEnableBoth}
+          itemsInStorage={itemsInStorage}
+          shouldDisableBoth={shouldDisableBoth}
         />
       </main>
       <footer className={footerClasses}>
         <div className={styles.dev}>
-          Powered by <a href='https://franciscodiazpaccot.com' target="_blank" rel="noreferrer noopener">
+          Powered by <a href='https://franciscodiazpaccot.dev' target="_blank" rel="noreferrer noopener">
           Francisco Diaz Paccot</a>
         </div>
       </footer>

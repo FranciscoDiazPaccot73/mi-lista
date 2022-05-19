@@ -58,4 +58,39 @@
     justify-content: flex-end;
     margin: 6px 20px 0 0;
   }
+
+  &_links {
+    display: flex;
+    padding: 12px;
+    position: relative;
+
+    &__status {
+      left: -8px;
+      position: absolute;
+      top: -14px;
+    }
+
+    &__actions {
+      display: flex;
+      margin-left: 10px;
+
+      button {
+        margin: 0 8px;
+      }
+    }
+
+    a {
+      &:link,
+      &:visited,
+      &:hover,
+      &:active {
+        font-weight: 600;
+        overflow:hidden; 
+        text-decoration: underline;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+      }
+    }
+  }
 }
