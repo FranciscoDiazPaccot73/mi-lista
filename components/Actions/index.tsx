@@ -10,12 +10,26 @@ import styles from '../../styles/Home.module.scss';
 interface Props {
   handleAddSection: any,
   addingSections: boolean,
-  handleClearStorage: any,
+  handleClearStorage?: any,
   handleSaveInStorage: any,
+  label: string,
+  shouldEnableBoth?: boolean,
+  itemsInStorage?: boolean,
+  shouldDisableBoth?: boolean,
+  hideRemove?: boolean
 }
 
-const Actions = ({ handleAddSection, addingSections, handleClearStorage, handleSaveInStorage }: Props) => {
-  const { state: { shouldEnableBoth, itemsInStorage }}  = useContext(PageContext);
+const Actions = ({
+  label,
+  handleAddSection,
+  addingSections,
+  handleClearStorage,
+  handleSaveInStorage,
+  shouldEnableBoth,
+  itemsInStorage,
+  shouldDisableBoth,
+  hideRemove,
+}: Props) => {
 
   return (
     <>
@@ -28,24 +42,26 @@ const Actions = ({ handleAddSection, addingSections, handleClearStorage, handleS
         disabled={addingSections}
         size="xs"
       >
-        Agregar Seccion
+        {label}
       </Button>
       <div className={styles.actions}>
-        <IconButton
-          colorScheme='red'
-          aria-label='Eliminar Listas'
-          size='lg'
-          icon={<DeleteIcon />}
-          onClick={handleClearStorage}
-          disabled={!itemsInStorage && !shouldEnableBoth}
+        {!hideRemove && (
+          <IconButton
+            colorScheme='red'
+            aria-label='Eliminar Listas'
+            size='lg'
+            icon={<DeleteIcon />}
+            onClick={handleClearStorage}
+            disabled={shouldDisableBoth || (!itemsInStorage && !shouldEnableBoth)}
           />
+        )}
         <IconButton
           colorScheme='teal'
           aria-label='Guardar Listas'
           size='lg'
           icon={<StarIcon />}
           onClick={handleSaveInStorage}
-          disabled={itemsInStorage && !shouldEnableBoth}
+          disabled={shouldDisableBoth || (itemsInStorage && !shouldEnableBoth)}
         />
       </div>
     </>

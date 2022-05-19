@@ -13,7 +13,7 @@ import {
 import { CheckIcon, DeleteIcon, AddIcon, WarningTwoIcon, StarIcon } from '@chakra-ui/icons'
 
 import { PageContext } from '../../context';
-import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus } from '../../context/actions';
+import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus, disableBoth } from '../../context/actions';
 
 import styles from './styles.module.scss';
 
@@ -64,6 +64,7 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
     setItems(newItems);
     setItemsAction(dispatch, newContextItems);
     setAdding(false)
+    disableBoth(dispatch, false);
     if (itemsInStorage) setStorageStatus(dispatch, false, true);
   }
 
@@ -73,6 +74,7 @@ const Card = ({ id, onSectionAdded, removeSection, head, items: i }: Props) => {
     newContextItems[header] = newItems;
     setItems(newItems);
     setItemsAction(dispatch, newContextItems);
+    if (!newItems.length) disableBoth(dispatch, true)
   }
 
   const handleOnCart = (item: string) => {
