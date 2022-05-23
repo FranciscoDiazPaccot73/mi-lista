@@ -49,7 +49,7 @@ const LinkCard = ({ link, onRemove, onEdit, storageLinks, onEditCategory }: Link
               </Editable>
             ) : <p onClick={() => setEditing(true)}>{link.category}</p>}
             {link.links.map((l: any) => (
-              <div className={styles.categories__item}>
+              <div key={l.id} className={styles.categories__item}>
                 <LinkItem
                   link={l}
                   storageLinks={storageLinks}
