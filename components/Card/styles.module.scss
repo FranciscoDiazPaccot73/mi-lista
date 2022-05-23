@@ -93,4 +93,43 @@
       }
     }
   }
+
+  .categories {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    &__row {
+      display: flex;
+      flex-direction: column;
+
+      .categories__item {
+        margin: 8px 6px 4px;
+      }
+
+      p {
+        font-size: 20px;
+        font-weight: 600;
+        height: 30px;
+      }
+    }
+
+    &__item {
+      display: flex;
+
+      a {
+        &:link,
+        &:visited,
+        &:hover,
+        &:active {
+          font-weight: 600;
+          overflow:hidden; 
+          text-decoration: underline;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 100%;
+        }
+      }
+    }
+  }
 }

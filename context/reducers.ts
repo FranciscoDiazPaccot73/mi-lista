@@ -7,7 +7,8 @@ export const types = {
   DISABLE_BOTH: "DISABLE_BOTH",
   DISABLE_BOTH_LINKS: "DISABLE_BOTH_LINKS",
   LINK_STORAGE_STATUS: "LINK_STORAGE_STATUS",
-  ENABLE_BOTH_ACTIONS_LINKS: "ENABLE_BOTH_ACTIONS_LINKS"
+  ENABLE_BOTH_ACTIONS_LINKS: "ENABLE_BOTH_ACTIONS_LINKS",
+  SET_CATEGORIES: "SET_CATEGORIES",
 };
 
 export const init = (config: any) => {
@@ -44,6 +45,9 @@ export const reducer = (state: any, action: any) => {
     }
     case types.DISABLE_BOTH_LINKS: {
       return {...state, shouldDisableBothLinks: action.value}
+    }
+    case types.SET_CATEGORIES: {
+      return {...state, categories: action.categories}
     }
     default:
       return null;

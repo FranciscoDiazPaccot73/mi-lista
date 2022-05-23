@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <PageProvider>
           <Tabs defaultIndex={isLinkSelected ? 1 : 0} colorScheme="telegram" size="lg" isFitted onChange={a => handleTabChange(a)}>
             <TabList>
-              <Tab isSelected={!isLinkSelected}>Compras</Tab>
+              <Tab isSelected={!isLinkSelected}>Lista</Tab>
               <Tab isSelected={isLinkSelected}>Links</Tab>
             </TabList>
           </Tabs>

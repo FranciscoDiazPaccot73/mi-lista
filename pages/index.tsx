@@ -7,6 +7,7 @@ import { useColorMode, IconButton, useToast } from '@chakra-ui/react'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
 import Actions from '../components/Actions';
 import Sections from '../components/Sections';
+import ConfirmModal from '../components/ConfirmModal';
 
 import { PageContext } from '../context';
 import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus, disableBoth } from '../context/actions';
@@ -18,6 +19,7 @@ const Home: NextPage = () => {
   const [minHeight, setHeight] = useState('100vh');
   const [sections, setSections] = useState<any>([]);
   const [addingSections, setAdding] = useState(false);
+  const [openConfirmModal, setConfirmModal] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode()
   const toast = useToast()
   const { dispatch, state: { shouldEnableBoth, contextItems = {}, contextHeaders, shouldDisableBoth, itemsInStorage }}  = useContext(PageContext);
@@ -80,6 +82,7 @@ const Home: NextPage = () => {
   }
   
   const handleClearStorage = () => {
+    handleConfirmModal();
     window.localStorage.removeItem('sections');
     window.localStorage.removeItem('items');
     window.localStorage.removeItem('headers');
@@ -89,6 +92,10 @@ const Home: NextPage = () => {
     shouldCleanList(dispatch, true);
     emitToast({ toast, type: 'info' })
     disableBoth(dispatch, true);
+  }
+
+  const handleConfirmModal = () => {
+    setConfirmModal(!openConfirmModal)
   }
 
   return (
@@ -119,13 +126,19 @@ const Home: NextPage = () => {
           label="Agregar seccion"
           handleAddSection={handleAddSection}
           addingSections={addingSections}
-          handleClearStorage={handleClearStorage}
+          handleClearStorage={handleConfirmModal}
           handleSaveInStorage={handleSaveInStorage}
           shouldEnableBoth={shouldEnableBoth}
           itemsInStorage={itemsInStorage}
           shouldDisableBoth={shouldDisableBoth}
         />
       </main>
+      <ConfirmModal
+        label="Si confirmas perderas toda la informacion guardada"
+        onConfirm={handleClearStorage}
+        isOpen={openConfirmModal}
+        onClose={handleConfirmModal}
+      />
       <footer className={footerClasses}>
         <div className={styles.dev}>
           Powered by <a href='https://franciscodiazpaccot.dev' target="_blank" rel="noreferrer noopener">

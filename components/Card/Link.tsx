@@ -1,54 +1,75 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import {
-  IconButton,
   useColorMode,
+  Editable,
+  EditablePreview,
+  EditableInput
 } from '@chakra-ui/react'
-import { DeleteIcon, StarIcon, EditIcon } from '@chakra-ui/icons'
+import LinkItem from './LinkItem';
 
 import { LinkType } from '../../utils/types';
 
 import styles from './styles.module.scss';
 
 interface LinkCardInterface {
-  link?: LinkType,
+  link?: any,
   onRemove: any,
   onEdit: any,
-  isOnStorage: boolean,
+  onEditCategory?: any,
+  storageLinks: Array<LinkType>,
 }
 
-const LinkCard = ({ link, onRemove, onEdit, isOnStorage }: LinkCardInterface) => {
+const LinkCard = ({ link, onRemove, onEdit, storageLinks, onEditCategory }: LinkCardInterface) => {
+  const [isEditing, setEditing] = useState<Boolean>(false);
   const { colorMode } = useColorMode()
   const cardClasses = classNames(styles.card, styles.card_links, colorMode === 'light' && styles.card_light)
 
+  const handleEditCategory = (value: string) => {
+    setEditing(false)
+    onEditCategory(value, link.category)
+  }
+
   return (
-  <div className={cardClasses}>
-    {isOnStorage && (
-      <div className={styles.card_links__status}>
-        <StarIcon color="orange" />
-      </div>
-    )}
-    <a href={link?.url} target="_blank" rel="noreferrer noopener">{link?.text}</a>
-    <span className={styles.card_links__actions}>
-      <IconButton
-        colorScheme='yellow'
-        aria-label='Editar'
-        variant="outline"
-        size='xs'
-        icon={<EditIcon />}
-        onClick={() => onEdit(link)}
-      />
-      <IconButton
-        colorScheme='red'
-        aria-label='Borrar'
-        variant="outline"
-        size='xs'
-        icon={<DeleteIcon />}
-        onClick={() => onRemove(link)}
-      />
-    </span>
-  </div>
-)}
+    <div className={cardClasses}>
+      {link?.category && link?.links?.length ? (
+        <div className={styles.categories}>
+          <div key={link.category} className={styles.categories__row}>
+            {isEditing ? (
+              <Editable
+                onSubmit={handleEditCategory}
+                submitOnBlur
+                startWithEditView
+                defaultValue={link.category}
+                style={{ marginBottom: "12px" }}
+              >
+                <EditablePreview />
+                <EditableInput />
+              </Editable>
+            ) : <p onClick={() => setEditing(true)}>{link.category}</p>}
+            {link.links.map((l: any) => (
+              <div key={l.id} className={styles.categories__item}>
+                <LinkItem
+                  link={l}
+                  storageLinks={storageLinks}
+                  onRemove={onRemove}
+                  onEdit={onEdit}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <LinkItem
+          link={link}
+          storageLinks={storageLinks}
+          onRemove={onRemove}
+          onEdit={onEdit}
+        />
+      )}
+    </div>
+  )
+}
 
 export default LinkCard;

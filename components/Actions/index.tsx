@@ -3,8 +3,6 @@ import React, { useContext } from 'react';
 import { Button, IconButton } from '@chakra-ui/react'
 import { AddIcon, DeleteIcon, StarIcon } from '@chakra-ui/icons'
 
-import { PageContext } from '../../context';
-
 import styles from '../../styles/Home.module.scss';
 
 interface Props {
@@ -45,24 +43,37 @@ const Actions = ({
         {label}
       </Button>
       <div className={styles.actions}>
-        {!hideRemove && (
-          <IconButton
-            colorScheme='red'
-            aria-label='Eliminar Listas'
-            size='lg'
-            icon={<DeleteIcon />}
-            onClick={handleClearStorage}
-            disabled={shouldDisableBoth || (!itemsInStorage && !shouldEnableBoth)}
-          />
-        )}
-        <IconButton
+        {hideRemove ? (
+          <Button
           colorScheme='teal'
           aria-label='Guardar Listas'
           size='lg'
-          icon={<StarIcon />}
+          leftIcon={<StarIcon />}
           onClick={handleSaveInStorage}
           disabled={shouldDisableBoth || (itemsInStorage && !shouldEnableBoth)}
-        />
+          >
+            Guardar Links
+          </Button>
+        ) : (
+          <>
+            <IconButton
+              colorScheme='red'
+              aria-label='Eliminar Listas'
+              size='lg'
+              icon={<DeleteIcon />}
+              onClick={handleClearStorage}
+              disabled={shouldDisableBoth || (!itemsInStorage && !shouldEnableBoth)}
+            />
+            <IconButton
+              colorScheme='teal'
+              aria-label='Guardar Listas'
+              size='lg'
+              icon={<StarIcon />}
+              onClick={handleSaveInStorage}
+              disabled={shouldDisableBoth || (itemsInStorage && !shouldEnableBoth)}
+            />
+          </>
+        )}
       </div>
     </>
   )

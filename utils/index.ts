@@ -4,6 +4,7 @@ type Toast = {
   description: string,
   isClosable: boolean,
   duration: number,
+  position: string,
 }
 
 type Toasts = {
@@ -19,7 +20,7 @@ interface ToastObj {
   toast: any,
 }
 
-export const emitToast = ({ toast, type = 'success', duration = 4000, isClosable = true }: ToastObj) => {
+export const emitToast = ({ toast, type = 'success', duration = 3000, isClosable = true }: ToastObj) => {
   const toasts: Toasts = {
     success: {
       title: `OK!`,
@@ -27,6 +28,7 @@ export const emitToast = ({ toast, type = 'success', duration = 4000, isClosable
       description: "Se guardo tu lista correctamente",
       isClosable,
       duration,
+      position: 'top',
     },
     info: {
       title: `Listo!`,
@@ -34,6 +36,7 @@ export const emitToast = ({ toast, type = 'success', duration = 4000, isClosable
       description: "Se elimino tu lista correctamente",
       isClosable,
       duration,
+      position: 'top',
     },
     warning: {
       title: `Cuidado!`,
@@ -41,6 +44,7 @@ export const emitToast = ({ toast, type = 'success', duration = 4000, isClosable
       description: "La lista que tenes guardada no esta actualizada",
       isClosable,
       duration,
+      position: 'top',
     }
   }
 
