@@ -29,3 +29,7 @@ export const setLinkStorageStatus = (dispatch: any, value: boolean, optional?: b
   dispatch({ type: types.LINK_STORAGE_STATUS, value });
   dispatch({ type: types.ENABLE_BOTH_ACTIONS_LINKS, value: !!optional });
 };
+
+export const setCategories = (dispatch: any, categories: Array<string>) => {
+  dispatch({ type: types.SET_CATEGORIES, categories })
+}
