@@ -7,8 +7,15 @@ import { DeleteIcon, StarIcon, EditIcon } from '@chakra-ui/icons'
 
 import styles from './styles.module.scss';
 
-const LinkItem = ({ storageLinks, link, onEdit, onRemove }: any) => {
-  const isOnStorage = storageLinks.some((l: any) => link?.id && l.id === link.id);
+type LinkItem = {
+  storageLinks?: any,
+  link: any,
+  onEdit: any,
+  onRemove: any,
+}
+
+const LinkItem = ({ storageLinks, link, onEdit, onRemove }: LinkItem) => {
+  const isOnStorage = storageLinks ? storageLinks.some((l: any) => link?.id && l.id === link.id) : null;
 
   return (
     <>

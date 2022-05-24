@@ -50,3 +50,11 @@ export const emitToast = ({ toast, type = 'success', duration = 3000, isClosable
 
   return toast(toasts[type as keyof Toasts]);
 }
+
+export const filterItems = (value: string, items: any, reset: boolean | undefined) => {
+  if (reset || !value || value === '' || value === ' ') return items;
+
+  const newItems = items.filter((i: any) => (i.text?.includes(value)) || i.url?.includes(value))
+
+  return newItems;
+}
