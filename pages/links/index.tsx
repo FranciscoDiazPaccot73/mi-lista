@@ -1,7 +1,6 @@
 import type { NextPage } from 'next'
 import { useEffect, useState, useContext, useRef } from 'react';
 import Head from 'next/head'
-import classNames from 'classnames';
 
 import { useColorMode, IconButton, useToast } from '@chakra-ui/react'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
@@ -9,10 +8,12 @@ import Actions from '../../components/Actions';
 import LinkCard from '../../components/Card/Link';
 import ModalComponent from '../../components/Modal';
 import ConfirmModal from '../../components/ConfirmModal';
+import Filter from '../../components/Filter';
+import Footer from '../../components/Footer';
 
 import { PageContext } from '../../context';
 import { disableBothLinks, setLinkStorageStatus, setCategories } from '../../context/actions';
-import { emitToast } from '../../utils';
+import { emitToast, filterItems } from '../../utils';
 import { LinkType, FormatedLinkType } from '../../utils/types';
 
 import styles from '../../styles/Home.module.scss'
@@ -26,12 +27,12 @@ const Links: NextPage = () => {
   const [adding, setAdding] = useState(false);
   const [confirmModal, setConfirmModal] = useState<any>({ isOpen: false, link: { id: null} });
   const [defaultModalValues, setModalValues] = useState<any>(null);
+  const [filterValue, setFilter] = useState<string | undefined>(undefined)
   const isOnStorage = useRef(false);
   const linksToRecalculate = useRef<any>(null);
   const initialCategories = useRef<Array<String> | null>(null);
   const toast = useToast()
   const { colorMode, toggleColorMode } = useColorMode()
-  const footerClasses = classNames(styles.footer, colorMode === 'dark' && styles.footer_light)
 
   useEffect(() => {
     setHeight(`${window.innerHeight - 53}px`)
@@ -161,6 +162,14 @@ const Links: NextPage = () => {
     setAdding(false)
   }
 
+  const handleFilter = (value: string, reset?: boolean | undefined) => {
+    const newLinks = filterItems(value, links, reset);
+
+    linksToRecalculate.current = newLinks;
+    const filter = reset ? '' : value;
+    setFilter(filter);
+  }
+
   return (
     <div className={styles.container} style={{ minHeight }}>
       <Head>
@@ -182,6 +191,12 @@ const Links: NextPage = () => {
             />
           </span>
         </div>
+        <Filter
+          className={styles.title__search}
+          formatedLinks={formatedLinks}
+          handleFilter={handleFilter}
+          filterValue={filterValue}
+        />
         {formatedLinks ? (
           formatedLinks.map((link: LinkType | FormatedLinkType, index: number) => {
             return (
@@ -223,12 +238,7 @@ const Links: NextPage = () => {
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ isOpen: false, link: {} })}
       />
-      <footer className={footerClasses}>
-        <div className={styles.dev}>
-          Powered by <a href='https://franciscodiazpaccot.dev' target="_blank" rel="noreferrer noopener">
-          Francisco Diaz Paccot</a>
-        </div>
-      </footer>
+      <Footer colorMode={colorMode} />
     </div>
   )
 }

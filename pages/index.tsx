@@ -8,6 +8,7 @@ import { MoonIcon, SunIcon } from '@chakra-ui/icons'
 import Actions from '../components/Actions';
 import Sections from '../components/Sections';
 import ConfirmModal from '../components/ConfirmModal';
+import Footer from '../components/Footer';
 
 import { PageContext } from '../context';
 import { setHeaderAction, setItemsAction, shouldCleanList, setStorageStatus, disableBoth } from '../context/actions';
@@ -139,12 +140,7 @@ const Home: NextPage = () => {
         isOpen={openConfirmModal}
         onClose={handleConfirmModal}
       />
-      <footer className={footerClasses}>
-        <div className={styles.dev}>
-          Powered by <a href='https://franciscodiazpaccot.dev' target="_blank" rel="noreferrer noopener">
-          Francisco Diaz Paccot</a>
-        </div>
-      </footer>
+      <Footer colorMode={colorMode} />
     </div>
   )
 }

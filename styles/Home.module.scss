@@ -9,8 +9,11 @@
   .title {
     font-size: 30px;
     line-height: 1.15;
-    margin: 0 0 32px 0;
     position: relative;
+
+    &__search {
+      margin: 24px 0;
+    }
 
     span {
       position: absolute;

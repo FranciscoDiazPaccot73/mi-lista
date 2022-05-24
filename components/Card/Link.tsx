@@ -7,6 +7,7 @@ import {
   EditablePreview,
   EditableInput
 } from '@chakra-ui/react'
+import { StarIcon } from '@chakra-ui/icons'
 import LinkItem from './LinkItem';
 
 import { LinkType } from '../../utils/types';
@@ -31,6 +32,10 @@ const LinkCard = ({ link, onRemove, onEdit, storageLinks, onEditCategory }: Link
     onEditCategory(value, link.category)
   }
 
+  const onStorageByCategory = link?.category &&
+    link?.links?.length &&
+    link.links.every((l: any) => storageLinks.find(currentLink => currentLink.id === l.id))
+
   return (
     <div className={cardClasses}>
       {link?.category && link?.links?.length ? (
@@ -50,9 +55,13 @@ const LinkCard = ({ link, onRemove, onEdit, storageLinks, onEditCategory }: Link
             ) : <p onClick={() => setEditing(true)}>{link.category}</p>}
             {link.links.map((l: any) => (
               <div key={l.id} className={styles.categories__item}>
+                {onStorageByCategory && (
+                  <div className={styles.card_links__status}>
+                    <StarIcon color="orange" />
+                  </div>
+                )}
                 <LinkItem
                   link={l}
-                  storageLinks={storageLinks}
                   onRemove={onRemove}
                   onEdit={onEdit}
                 />
