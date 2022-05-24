@@ -13,7 +13,9 @@ interface Props {
 const Filter = ({ className, formatedLinks, handleFilter, filterValue }: Props) => (
   <div className={className}>
     <InputGroup>
-      <InputLeftElement children={<SearchIcon color={!formatedLinks || !formatedLinks.length ? "gray.400" : ''} />} />
+      <InputLeftElement>
+        <SearchIcon color={!formatedLinks || !formatedLinks.length ? "gray.400" : ''} />
+      </InputLeftElement>
       <Input
         isDisabled={!formatedLinks || !formatedLinks.length}
         placeholder='Filtrar por nombre o url'
